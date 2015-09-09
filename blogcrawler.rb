@@ -2,7 +2,7 @@ require 'selenium-webdriver'
 require 'rubygems'
 require 'capybara'
 require 'capybara/dsl'
-require './recursive_visit'  
+require './recursive_visit'
 
 Capybara.configure do |config|
 
@@ -38,9 +38,9 @@ class BlogCrawler
 
   def search_google
     visit "http://www.google.com.vn/"
-    fill_in 'gbqfq', :with => 'tenluaweb.com'
+    fill_in 'lst-ib', :with => 'tenluaweb.com'
     # find(:id, 'gbqfq').native.send_keys('tenluaweb.com')
-    find(:id, 'gbqfb').click
+    find(:id, 'sblsbb').click
 
     20.times do |i|
       within(:xpath, '//div[@id="ires"]') do
