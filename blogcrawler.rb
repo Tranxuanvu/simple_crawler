@@ -49,7 +49,7 @@ class BlogCrawler
     @paths.each do |path|
       visit path
       options.fetch(:times).times do |i|
-        explore
+        # explore
       end
       sleep 3
     end
@@ -57,7 +57,13 @@ class BlogCrawler
 end
 
 def usage
-  puts "usage"
+  puts "
+    Usage: ruby blogcrawler.rb [options]
+      -h , --help                                  Show this help.
+      -p=domains, --paths=domains                  Domain of page want to visit. Ex: http://example.com
+      -t=number, --times=number                    Number of times visit domain
+      -tpl=number,  --times_per_link=number        Number of times per link in domain
+  "
 end
 
 if !ARGV.empty?
