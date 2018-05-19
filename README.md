@@ -1,6 +1,18 @@
-# simple_crawler
-<h1>Install</h1>
-<p>gem install selenium-webdriver</p>
-<p>gem install capybara</p>
-<h3>Note</h3>
-<p>require for chrome: download driver (http://chromedriver.storage.googleapis.com/index.html), extract to PATH on ubuntu (in /usr/bin)</p>
+# Simple Viewer
+## Install
+- install ruby version 2.3.1
+- `git clone https://github.com/Tranxuanvu/simple_viewer.git`
+- `bundle`
+## Usage
+```
+  ruby blogcrawler.rb [options]
+    -h , --help                                  Show this help.
+    -p=domains, --paths=domains                  Domain of page want to visit. Ex: http://example.com
+    -t=number, --times=number                    Number of times visit domain
+    -tpl=number,  --times_per_link=number        Number of times per link in domain
+```
+- Example:
+
+  `ruby blogcrawler.rb -p=http://example.com -t=5 -tpl=2`
+  
+  `ruby blogcrawler.rb -p=[http://example.com] -t=5 -tpl=2`
