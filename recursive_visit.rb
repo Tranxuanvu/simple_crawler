@@ -1,10 +1,11 @@
 class RecursiveVisit
   include Capybara::DSL
 
-  SLEEP_TIME = 2
+  SLEEP_TIME = 5
 
   def initialize(links, total = 300)
-    @links = links.map { |link| link[:href] }
+    @links = links.map { |link| link[:href] }.compact
+    @links.reject!{|link| !link.match('https?:\/\/[\S]+')}
     @total = total
   end
 
@@ -15,7 +16,7 @@ class RecursiveVisit
         puts "visit #{link}"
 
         visit link
-        sleep rand(SLEEP_TIME)
+        sleep SLEEP_TIME
       end
 
       reset_session
@@ -30,6 +31,5 @@ class RecursiveVisit
 
   def subset_link
     @links.sample(rand(@links.count) + 1)
-    print @links
   end
 end

@@ -3,6 +3,16 @@ require 'rubygems'
 require 'capybara'
 require 'capybara/dsl'
 require './recursive_visit'
+require 'os'
+require 'pry'
+
+if OS.linux?
+  Selenium::WebDriver::Chrome.driver_path="./chromedriver_linux64"
+elsif OS.windows?
+  Selenium::WebDriver::Chrome.driver_path="./chromedriver_win32.exe"
+else
+  Selenium::WebDriver::Chrome.driver_path="./chromedriver_mac64"
+end
 
 Capybara.configure do |config|
 
@@ -10,9 +20,8 @@ Capybara.configure do |config|
     Capybara::Selenium::Driver.new(app, :browser => :chrome)
   end
 
-  config.current_driver = :selenium
+  config.default_driver = :selenium
   config.run_server = false
-  # config.app_host   = 'http://blog.tenluaweb.com'
   config.always_include_port = false
 
 end
@@ -20,45 +29,48 @@ end
 class BlogCrawler
   include Capybara::DSL
 
-  attr_reader :paths, :tags
+  attr_reader :paths
 
   def initialize(paths, options = {})
     @paths = paths.is_a?(Array) ? paths : [paths]
-    option.merge! options
+    options.merge! options
   end
 
-  def option
-    @option ||= { total: 20 }
+  def options
+    @options ||= { total: 20, times: 20 }
   end
 
   def explore
     links = page.all('a')
-    RecursiveVisit.new(links, option.fetch(:total)).view_link
+    RecursiveVisit.new(links, options.fetch(:total)).view_link
   end
 
-  def search_google
-    visit "http://www.google.com.vn/"
-    fill_in 'lst-ib', :with => 'tenluaweb.com'
-    # find(:id, 'gbqfq').native.send_keys('tenluaweb.com')
-    find(:id, 'sblsbb').click
-
-    20.times do |i|
-      within(:xpath, '//div[@id="ires"]') do
-        search_res = page.all('a')
-        result = search_res.map { |link| link[:href] }
-        puts result
-        # result.each do |_link|
-        #   puts "visit #{_link}"
-        #   visit _link
-        sleep 3
-        # end
-        # explore
+  def run
+    @paths.each do |path|
+      visit path
+      options.fetch(:times).times do |i|
+        explore
       end
-      i = i + 1
+      sleep 3
     end
-    sleep 3
   end
-
 end
 
-BlogCrawler.new('').search_google
+def usage
+  puts "usage"
+end
+
+if !ARGV.empty?
+  args = Hash[ ARGV.flat_map{|s| s.scan(/--?([^=\s]+)(?:=(\S+))?/) } ]
+  return usage unless args.key?('paths') || args.key?('p')
+
+  paths = args['paths'] || args['p']
+  times = args['times'] || args['t']
+  times_visit_one_link = args['times_per_link'] || args['tpl']
+  options = { total: times_visit_one_link.to_i, times: times.to_i }
+  options = {} unless times_visit_one_link || times
+
+  BlogCrawler.new(paths, options).run
+else
+  usage
+end
